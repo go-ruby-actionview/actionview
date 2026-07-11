@@ -114,9 +114,50 @@ installs the gem and runs the diff on the ubuntu/macOS lanes.
 
 Two documented, deterministic divergences: attributes supplied via a Go `map`
 are emitted in **sorted-key** order (Go maps have no insertion order; MRI
-preserves it — use the ordered `Attrs` slice for exact control), and HTML
-**sanitization** is not yet implemented (the `Sanitizer` seam defaults to
-identity, i.e. `simple_format` / `highlight` behave as with `sanitize: false`).
+preserves it — use the ordered `Attrs` slice for exact control), and, in the
+sanitizer, `golang.org/x/net/html` normalises attribute order to **sorted** on
+HTML5 *active-formatting* elements (`a`, `b`, `i`, `em`, `strong`, `code`, …)
+while preserving source order everywhere else (`div`, `p`, `span`, `img`, …) —
+so a formatting element carrying two or more surviving attributes may reorder
+them. This never affects *which* attributes survive, only their order.
+
+## HTML sanitization
+
+`SanitizeHelper` is implemented on top of the stdlib `golang.org/x/net/html`
+(pure Go, no cgo), reproducing the observable behaviour of Rails'
+`rails-html-sanitizer` / Loofah **HTML5 vendor** (`Rails::HTML5::Sanitizer`) —
+the natural match for x/net/html's HTML5 parser. The security-critical outcomes
+(XSS vectors neutralised, disallowed tags/attributes stripped, allowed markup
+preserved) are identical to ActionView's default `sanitize` helper.
+
+```go
+// sanitize: SafeList/PermitScrubber allow-list scrubbing.
+actionview.Sanitize(`<script>alert(1)</script>hi`, nil, nil)      // hi
+actionview.Sanitize(`<a href="javascript:x">y</a>`, nil, nil)     // <a>y</a>
+actionview.Sanitize(`<a href="/x" onclick="e">y</a>`, nil, nil)   // <a href="/x">y</a>
+actionview.Sanitize(`<b>b</b> <i>i</i>`, []string{"b"}, nil)      // <b>b</b> i
+
+// strip_tags / strip_links / sanitize_css.
+actionview.StripTags(`<b>hi</b> <a href="/x">y</a>`)              // hi y
+actionview.StripLinks(`<a href="/x">click</a> here`)              // click here
+actionview.SanitizeCSS(`color: red; background: url(javascript:1)`) // color:red;
+
+// The scrubber classes and configurable defaults.
+s := actionview.NewSafeListSanitizer()   // + NewFullSanitizer / NewLinkSanitizer
+s.Sanitize(html, tags, attributes)       // WhiteListSanitizer is the alias
+actionview.SanitizedAllowedTags          // = DefaultAllowedTags (mutable policy)
+actionview.SanitizedAllowedAttributes    // = DefaultAllowedAttributes
+```
+
+The sanitizer neutralises `javascript:` URIs (including entity-obfuscated
+colons), drops event handlers, demotes `<script>`/`<style>` bodies to inert
+text, removes comments, prunes foreign (`svg`/`math`) subtrees, and enforces the
+Rails default tag/attribute/protocol/CSS allow-lists. `SanitizeSanitizer` adapts
+it to the `Sanitizer` seam so `SimpleFormat` / `Highlight` can run with
+`sanitize: true`. Behaviour is validated **byte-for-byte** against both
+`rails-html-sanitizer`'s HTML5 sanitizer and ActionView's `SanitizeHelper`
+(`sanitize` / `strip_tags` / `strip_links` / `sanitize_css`) in
+`sanitizer_oracle_test.go`.
 
 ## Roadmap (deferred from v0.1)
 
@@ -126,8 +167,6 @@ This is the **foundation**. Deliberately deferred, in rough priority order:
   the real partial/template file lookup (only the `RenderTemplate` seam exists now).
 - **Layouts** and `content_for` / `yield` / `provide`.
 - **Fragment / Russian-doll caching.**
-- **HTML sanitization** (`SanitizeHelper`, Rails::HTML / Loofah) behind the
-  existing `Sanitizer` seam.
 - **AssetTagHelper** (image/stylesheet/javascript tags, the asset pipeline).
 - **FormOptionsHelper** beyond the basics (grouped/collection selects, time zones).
 - **DateHelper** (`distance_of_time_in_words`, date/time selects).
