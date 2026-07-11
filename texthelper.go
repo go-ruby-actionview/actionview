@@ -15,10 +15,10 @@ import (
 )
 
 // Sanitizer is the seam ActionView's simple_format / highlight use to strip
-// unsafe markup before wrapping it. A full HTML sanitizer (Rails::HTML /
-// Loofah) is deferred (see the README roadmap); the default is IdentitySanitizer
-// which passes text through unchanged, equivalent to calling the helpers with
-// sanitize: false.
+// unsafe markup before wrapping it. The default is IdentitySanitizer, which
+// passes text through unchanged, equivalent to calling the helpers with
+// sanitize: false; pass SanitizeSanitizer (the full Rails::HTML / Loofah-style
+// SafeList sanitizer implemented in sanitizer.go) for sanitize: true behaviour.
 type Sanitizer func(string) string
 
 // IdentitySanitizer returns text unchanged. It is the default sanitizer, so the

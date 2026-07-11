@@ -22,8 +22,12 @@
 // evaluation (ERB / Ruby) is delegated to Context.RenderTemplate, keeping this
 // package free of any template engine.
 //
+// SanitizeHelper is implemented (Sanitize, SanitizeCSS, StripTags, StripLinks
+// and the FullSanitizer / LinkSanitizer / SafeListSanitizer classes), mirroring
+// rails-html-sanitizer / Loofah's HTML5 vendor on top of the stdlib
+// golang.org/x/net/html.
+//
 // See the README for the v0.1 surface and the roadmap of deferred pieces (the
 // full template resolver with formats/variants/digests, layouts, fragment
-// caching, AssetTagHelper, DateHelper, i18n TranslationHelper, streaming and
-// HTML sanitization).
+// caching, AssetTagHelper, DateHelper, i18n TranslationHelper and streaming).
 package actionview
