@@ -7,4 +7,4 @@ require (
 	github.com/go-ruby-erb/erb v0.0.0-20260629074717-0999ae4dd529
 )
 
-require golang.org/x/net v0.57.0
+require golang.org/x/net v0.58.0
