@@ -10,6 +10,8 @@ github.com/go-ruby-erb/erb v0.0.0-20260717064518-1e3bc0812b45 h1:C4HnZxZAm46pyQf
 github.com/go-ruby-erb/erb v0.0.0-20260717064518-1e3bc0812b45/go.mod h1:HEJVI7jQ/BnjiSiu2Wj934QboEAgdv47RNOqvZb+nRw=
 github.com/go-ruby-erb/erb v0.0.0-20260916092736-2b6ca70e94b1 h1:W0IT8+iWj4qU0eZXiGkDLgyWqn8XR5pDwRj2oKZkqlE=
 github.com/go-ruby-erb/erb v0.0.0-20260916092736-2b6ca70e94b1/go.mod h1:HEJVI7jQ/BnjiSiu2Wj934QboEAgdv47RNOqvZb+nRw=
+github.com/go-ruby-erb/erb v0.0.0-20261007112448-149f68f34026 h1:WoebhxIk2Ao6iNxDfIM3H94f3eoO9E+ABbqCCM6velc=
+github.com/go-ruby-erb/erb v0.0.0-20261007112448-149f68f34026/go.mod h1:9IzZ2CwAFLm9xwrQXX2vL6nLrY4JWL3ZkMok4+IyfQA=
 golang.org/x/net v0.57.0 h1:K5+3DljvIuDG9/Jv9rvyMywYNFCQ9RSUY6OOTTkT+tE=
 golang.org/x/net v0.57.0/go.mod h1:KpXc8iv+r3XplLAG/f7Jsf9RPszJzdR0f58q9vGOuEU=
 golang.org/x/net v0.58.0 h1:ynWG7rqYi4ccpTEuPZ2QGWHktVEM9DMCj9yzDE0Q7To=
